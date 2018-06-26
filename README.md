@@ -125,21 +125,31 @@ webpack.config.js
 
 ## jsx
 
+### 基础用法
+
 ``` js
+// 在入口文件app/index.jsx
 import React from 'react'
 import { render } from 'render-dom'
 
 // 定义组件
 class Hello extends React.Component {
-  render() {
-    return {
-      // jsx语法，render中只能有一个elment元素进行包裹
-      <div>
-        <p className="title">123</p>
-        <p style={{fontSzie: '50px'}}>hellow</p>
-      </div>
+    render() {
+        var num = 100
+        var x = 1
+        var y = 1
+        var style = {fontSize: '20px'}
+        return (
+            <div>
+                <p className="title">123</p>
+                <p style={{fontSize: '50px'}}>hello</p>
+                // 大括号可以放js对象
+                <p style={style}>world</p>
+                <p>{num ? num : 'not num'}</p>
+                {/*js的注释*/}
+            </div>
+        )
     }
-  }
 }
 
 render(
@@ -147,3 +157,64 @@ render(
   document.getElementById('root')
 )
 ```
+
+### 事件和if判断
+
+``` js
+import React from 'react'
+import { render } from 'react-dom'
+
+// import './static/css/common.less'
+
+class Hello extends React.Component {
+    render() {
+        var arr = ['a', 'b', 'c']
+        var show = true
+        return (
+            <div>
+                <p onClick={this.clickHandler.bind(this)}>click</p>
+                <ul>
+                    {arr.map(function(item, index) {
+                        return <li key={index}>{item}</li>
+                    })}
+                </ul>
+                <p style={{display: show ? 'display' : 'none'}}>if判断</p>
+            </div>
+        )
+    }
+    clickHandler () {
+        console.log(Date.now())
+        console.log(this.clickHandler)
+    }
+}
+
+render(
+    <Hello/>,
+    document.getElementById('root')
+)
+```
+
+这里加一个bind方法
+
+bind方法生成了一个新的函数，称为绑定函数，传入bind方法的第一个參数作为这个绑定函数的this对象，传入bind的第二个參数连同后面调用绑定函数时传入的參数依照先后顺序（传入bind的在前）构成绑定函数的參数。
+
+``` js
+  var foo = {
+      x: 3
+  }
+  var bar = function(){
+      console.log(this.x);
+  }
+  bar();
+  // undefined
+
+  var boundFunc = bar.bind(foo);
+
+  boundFunc();
+  // 3
+```
+
+将bar方法和foo对象绑定后，bar中的this对象被替换为了foo，并生成了一个新的函数boundFunc，因此在全局环境中调用boundFunc时。也能够訪问到foo对象的属性。
+
+与call、apply的差别
+call、apply是改动函数的作用域，而且马上运行。而bind是返回了一个新的函数，不是马上运行，即call and apply call a function while bind creates a function。(bind在回调函数中经常使用到。)
